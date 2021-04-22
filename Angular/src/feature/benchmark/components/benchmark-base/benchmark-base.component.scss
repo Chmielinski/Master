@@ -1,0 +1,15 @@
+.benchmark-base {
+  width: 50vw;
+  > * {
+    margin: 1rem 0;
+  }
+  
+  &__flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > * {
+      margin: 0 2rem;
+    }
+  }
+}

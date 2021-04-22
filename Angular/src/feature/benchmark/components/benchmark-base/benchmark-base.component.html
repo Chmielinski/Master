@@ -1,0 +1,41 @@
+<div class="benchmark-base">
+  <div class="benchmark-base__flex">
+    <label>
+      Liczba powtórzeń:
+      <input type="number" [formControl]="repeatCountControl" />
+    </label>
+  </div>
+  <div class="benchmark-base__flex">
+    <ng-container *ngIf="averageRunTime && totalRunTime; else progressBar">
+      <b>
+        Średni czas wykonania: {{averageRunTime}}ms
+      </b>
+      <b>
+        Łączny czas wykonania: {{totalRunTime}}ms
+      </b>
+    </ng-container>
+    <ng-template #progressBar>
+      <ng-container *ngIf="progress">
+        <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+      </ng-container>
+    </ng-template>
+  </div>
+  <ng-container *ngIf="additionalSettingsDirective" [ngTemplateOutlet]="additionalSettingsDirective.content"></ng-container>
+  <div class="benchmark-base__flex">
+    <button type="button" [disabled]="!isValidRepeatCount()" class="btn btn-primary" (click)="runBenchmark()">Uruchom</button>
+  </div>
+  <table class="table table-striped" *ngIf="results && results.length">
+    <thead>
+      <tr class="thead-dark">
+        <th>L.p.</th>
+        <th>Czas wykonania</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let result of results; let i = index">
+        <th>{{i+1}}.</th>
+        <th>{{result}}ms</th>
+      </tr>
+    </tbody>
+  </table>
+</div>
