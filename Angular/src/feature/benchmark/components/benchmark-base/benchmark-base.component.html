@@ -1,10 +1,14 @@
 <div class="benchmark-base">
   <div class="benchmark-base__flex">
+    <h1>{{name}}</h1>
+  </div>
+  <div class="benchmark-base__flex">
     <label>
       Liczba powtórzeń:
       <input type="number" [formControl]="repeatCountControl" />
     </label>
   </div>
+  <hr />
   <div class="benchmark-base__flex">
     <ng-container *ngIf="averageRunTime && totalRunTime; else progressBar">
       <b>

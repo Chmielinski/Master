@@ -1,8 +1,31 @@
 <benchmark-base name="Test struktur danych" [component]="this">
-  <div *benchmarkAdditionalSettings class="benchmark-base__flex">
-    <label>
-      Liczba elementów w tablicy:
-      <input type="number" [formControl]="numberOfElementsControl" />
-    </label>
-  </div>
+  <ng-container *benchmarkAdditionalSettings>
+    <h3 class="benchmark-base__flex">
+      Parametry testu:
+    </h3>
+    <div class="benchmark-base__flex">
+      <label>
+        Liczba elementów w tablicy:
+        <input type="number" [formControl]="numberOfElementsControl" />
+      </label>
+    </div>
+    <b class="benchmark-base__flex">
+      Wybór testu:
+    </b>
+    <div class="benchmark-base__flex">
+      <button type="button" 
+              class="btn" 
+              [ngClass]="activeTest === dataStructureTest.Generate ? 'btn-success' : 'btn-secondary'" 
+              (click)="selectTest(dataStructureTest.Generate)">Generowanie</button>
+      <button type="button" 
+              class="btn" 
+              [ngClass]="activeTest === dataStructureTest.GetUnique ? 'btn-success' : 'btn-secondary'" 
+              (click)="selectTest(dataStructureTest.GetUnique)">Wyciągnięcie unikalnych elementów</button>
+      <button type="button" 
+              class="btn" 
+              [ngClass]="activeTest === dataStructureTest.Iterate ? 'btn-success' : 'btn-secondary'" 
+              (click)="selectTest(dataStructureTest.Iterate)">Iteracja</button>
+    </div>
+    <hr />
+  </ng-container>
 </benchmark-base>

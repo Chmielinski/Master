@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BenchmarkAdditionalSettingsDirective } from './directives/benchmark-additional-settings.directive';
+import { HttpBenchmarkService } from './models/services/http-benchmark.service';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { BenchmarkAdditionalSettingsDirective } from './directives/benchmark-add
     DomBenchmarkComponent, 
     LoadBenchmarkComponent, 
     HttpBenchmarkComponent, 
-    BenchmarkBaseComponent, BenchmarkAdditionalSettingsDirective
+    BenchmarkBaseComponent, 
+    BenchmarkAdditionalSettingsDirective
   ],
   imports: [
     ReactiveFormsModule,
@@ -28,6 +30,9 @@ import { BenchmarkAdditionalSettingsDirective } from './directives/benchmark-add
       { path: 'http', component: HttpBenchmarkComponent },
       { path: 'load', component: LoadBenchmarkComponent }
     ])
+  ],
+  providers: [
+    HttpBenchmarkService
   ]
 })
 export class BenchmarkModule { }

@@ -1,1 +1,28 @@
-<p>dom-benchmark works!</p>
+<benchmark-base name="Test manipulacji DOM" [component]="this">
+  <ng-container *benchmarkAdditionalSettings>
+    <h3 class="benchmark-base__flex">
+      Parametry testu:
+    </h3>
+    <div class="benchmark-base__flex">
+      <label>
+        Liczba elementów:
+        <input type="number" [formControl]="numberOfElementsControl" />
+      </label>
+    </div>
+    <b class="benchmark-base__flex">
+      Wybór testu:
+    </b>
+    <div class="benchmark-base__flex">
+      <button type="button" 
+              class="btn" 
+              [ngClass]="activeTest === domTest.Append ? 'btn-success' : 'btn-secondary'" 
+              (click)="selectTest(domTest.Append)">Dodawanie elementów</button>
+      <button type="button" 
+              class="btn" 
+              [ngClass]="activeTest === domTest.Remove ? 'btn-success' : 'btn-secondary'" 
+              (click)="selectTest(domTest.Remove)">Usuwanie elementów</button>
+    </div>
+    <hr />
+    <div #scratchpad></div>
+  </ng-container>
+</benchmark-base>

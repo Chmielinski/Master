@@ -25,22 +25,25 @@ export class BenchmarkBaseComponent implements OnInit {
   constructor(private cdRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    
+    if (!this.component) {
+      throw new Error('Component not supplied!');
+    }
   }
 
   public isValidRepeatCount(): boolean {
     return this.repeatCountControl.value > 0;
   }
 
-  public runBenchmark(): void {
+  public async runBenchmark(): Promise<void> {
     this.averageRunTime = 0;
     this.totalRunTime = 0;
     this.results = [];
     this.progress = 1;
     const repeats = this.repeatCountControl.value;
     for (let i = 0; i < repeats; i++) {
+      this.component?.setupTest();
       const startTime = new Date().getTime();
-      this.component?.runTest();
+      await this.component?.runTest();
       const endTime = new Date().getTime();
       const runTime = endTime - startTime;
       console.log(runTime)
