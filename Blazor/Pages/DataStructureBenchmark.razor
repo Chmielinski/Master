@@ -1,0 +1,96 @@
+﻿@page "/data-structure"
+@using Blazor.Models.Enums
+@using Blazor.Models.Forms
+@implements Blazor.Abstract.IBenchmarkComponentBase
+
+<BaseBenchmark Child="@this">
+    <h3 class="benchmark-base__flex">
+        Parametry testu:
+    </h3>
+    <EditForm Model="@_formModel">
+        <div class="benchmark-base__flex">
+            <label>
+                Liczba elementów w tablicy:
+                <InputNumber id="number-of-elements-control" @bind-Value="@_formModel.ListSize" />
+            </label>
+        </div>
+    </EditForm>
+    <b class="benchmark-base__flex">
+        Wybór testu:
+    </b>
+    <div class="benchmark-base__flex">
+        <button type="button" 
+                class="@GetButtonClass(DataStructureTest.Generate)"
+                @onclick="() => SelectTest(DataStructureTest.Generate)">Generowanie</button>
+        <button type="button" 
+                class="@GetButtonClass(DataStructureTest.GetUnique)"
+                @onclick="() => SelectTest(DataStructureTest.GetUnique)">Wyciągnięcie unikalnych elementów</button>
+        <button type="button" 
+                class="@GetButtonClass(DataStructureTest.Iterate)"
+                @onclick="() => SelectTest(DataStructureTest.Iterate)">Iteracja</button>
+    </div>
+    <hr />
+</BaseBenchmark>
+
+@code {
+    public string Name => "Test struktur danych";
+    private DataStructureTest _activeTest = DataStructureTest.Generate;
+    private List<int> _testList;
+    private DataStructureBenchmarkForm _formModel = new();
+
+    public void SelectTest(DataStructureTest test)
+    {
+        _activeTest = test;
+    }
+
+    public string GetButtonClass(DataStructureTest test)
+    {
+        return $"btn {(_activeTest == test ? "btn-success" : "btn-secondary")}";
+    }
+
+    public async Task SetupTest()
+    {
+        if (_activeTest != DataStructureTest.Generate) {
+            _testList = GenerateList();
+        }
+    }
+
+    public async Task RunTest()
+    {
+        switch (_activeTest) {
+            case DataStructureTest.Generate:
+                GenerateList();
+                break;
+            case DataStructureTest.GetUnique:
+                GetUniqueFromArray();
+                break;
+            case DataStructureTest.Iterate:
+                IterateThroughArray();
+                break;
+        }
+    }
+
+    private List<int> GenerateList()
+    {
+        var list = new List<int>();
+        var random = new Random();
+        for (var i = 0; i < _formModel.ListSize; i++)
+        {
+            list.Add(random.Next(0, 100));
+        }
+        return list;
+    }
+
+    private void GetUniqueFromArray()
+    {
+        var list = _testList.Distinct();
+    }
+
+    private void IterateThroughArray()
+    {
+        for (var i = 0; i < _formModel.ListSize; i++)
+        {
+            var value = _testList[i];
+        }
+    }
+}

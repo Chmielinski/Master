@@ -60,6 +60,7 @@ export class DataStructureBenchmarkComponent extends BenchmarkComponentBase impl
         this.getUniqueFromArray();
         break;
       case DataStructureTest.Iterate:
+        this.iterateThroughArray();
         break;
     }
   }

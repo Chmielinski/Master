@@ -1,0 +1,94 @@
+﻿@using Blazor.Abstract
+@using Blazor.Models.Forms
+@using Blazor.Utils
+
+<div class="benchmark-base">
+    <div class="benchmark-base__flex">
+        <h1>@Child.Name</h1>
+    </div>
+    <EditForm Model="@_formModel" OnValidSubmit="RunBenchmark">
+        <div class="benchmark-base__flex">
+            <label>
+                Liczba powtórzeń:
+                <InputNumber id="repeat-count-control" @bind-Value="@_formModel.RepeatCount" />
+            </label>
+        </div>
+        <hr />
+        <div class="benchmark-base__flex">
+            @if (_averageRunTime > 0 && _totalRunTime > 0)
+            {
+                <b>
+                    Średni czas wykonania: @(_averageRunTime) ms
+                </b>
+                <b>
+                    Łączny czas wykonania: @(_totalRunTime) ms
+                </b>
+            }
+            else if (_progress > 0)
+            {
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="@($"width: {_progress}%")" aria-valuenow="@_progress" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            }
+        </div>
+        @ChildContent
+        <div class="benchmark-base__flex">
+            <button type="submit" class="btn btn-primary">Uruchom</button>
+        </div>
+    </EditForm>
+    @if (_results?.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+            <tr class="thead-dark">
+                <th>L.p.</th>
+                <th>Czas wykonania</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < _results.Count; i++)
+            {
+                <tr>
+                    <th>@(i+1).</th>
+                    <th>@(_results[i])ms</th>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IBenchmarkComponentBase Child { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private BaseBenchmarkForm _formModel = new();
+    private decimal _averageRunTime = 0;
+    private decimal _totalRunTime = 0;
+    private int _progress = 0;
+    private List<long> _results = new();
+
+    private bool IsInvalidRepeatCount => _formModel.RepeatCount <= 0;
+
+    private async void RunBenchmark()
+    {
+        _averageRunTime = 0;
+        _totalRunTime = 0;
+        _results = new();
+        _progress = 1;
+        var repeats = _formModel.RepeatCount;
+        for (var i = 0; i < repeats; i++) {
+            await Child.SetupTest();
+            var startTime = DateTime.UtcNow.ToUnixTimestamp();
+            await Child.RunTest();
+            var endTime = DateTime.UtcNow.ToUnixTimestamp();
+            var runTime = endTime - startTime;
+            _results.Add(runTime);
+            _progress = (i + 1) * 100 / repeats;
+        }
+        _totalRunTime = _results.Sum();
+        _averageRunTime = _totalRunTime / repeats;
+    }
+}
