@@ -1,18 +1,53 @@
 ﻿@page "/http"
+@using Blazor.Models.Enums
+@using Blazor.Services.Interfaces
+@inject IHttpBenchmarkService HttpBenchmarkService;
 @implements Blazor.Abstract.IBenchmarkComponentBase
 
-<h3>HttpBenchmark</h3>
+<BaseBenchmark Child="@this">
+    <b class="benchmark-base__flex">
+        Wybór testu:
+    </b>
+    <div class="benchmark-base__flex">
+        <button type="button"
+                class="@GetButtonClass(HttpTest.Get)"
+                @onclick="() => SelectTest(HttpTest.Get)">GET</button>
+        <button type="button"
+                class="@GetButtonClass(HttpTest.Post)" 
+                @onclick="() => SelectTest(HttpTest.Post)">POST</button>
+    </div>
+    <hr />
+</BaseBenchmark>
 
-@code {
-    public string Name => "Test komunikacji HTTP";
-    public Task SetupTest()
-    {
-        throw new NotImplementedException();
+    @code {
+        public string Name => "Test komunikacji HTTP";
+        private HttpTest _activeTest = HttpTest.Get;
+
+        public async Task SetupTest()
+        {
+            return;
+        }
+
+        public async Task RunTest()
+        {
+            switch (_activeTest)
+            {
+                case HttpTest.Get:
+                    await HttpBenchmarkService.Get();
+                    break;
+                case HttpTest.Post:
+                    await HttpBenchmarkService.Post();
+                    break;
+            }
+        }
+
+        public void SelectTest(HttpTest test)
+        {
+            _activeTest = test;
+        }
+
+        public string GetButtonClass(HttpTest test)
+        {
+            return $"btn {(_activeTest == test ? "btn-success" : "btn-secondary")}";
+        }
     }
-
-    public Task RunTest()
-    {
-        throw new NotImplementedException();
-    }
-
-}

@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Blazor.Services.Implementation;
+using Blazor.Services.Interfaces;
 
 namespace Blazor
 {
@@ -16,8 +15,10 @@ namespace Blazor
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
+            var baseAddress = builder.Configuration.GetValue<string>("ApiBaseUrl");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+            builder.Services.AddScoped<IHttpBenchmarkService, HttpBenchmarkService>();
 
             await builder.Build().RunAsync();
         }

@@ -1,18 +1,84 @@
 ﻿@page "/dom"
-@inherits Blazor.Abstract.IBenchmarkComponentBase
+@using Blazor.Models.Forms
+@using Blazor.Models.Enums
+@inject IJSRuntime JS
+@implements Blazor.Abstract.IBenchmarkComponentBase
 
-<h3>DomBenchmark</h3>
+<BaseBenchmark Child="@this">
+    <h3 class="benchmark-base__flex">
+        Parametry testu:
+    </h3>
+    <div class="benchmark-base__flex">
+        <EditForm Model="@_formModel">
+            <label>
+                Liczba elementów:
+                <InputNumber id="number-of-elements-control" @bind-Value="@_formModel.NumberOfElements" />
+            </label>
+        </EditForm>
+    </div>
+    <b class="benchmark-base__flex">
+        Wybór testu:
+    </b>
+    <div class="benchmark-base__flex">
+        <button type="button" 
+                class="@GetButtonClass(DomTest.Append)" 
+                @onclick="() => SelectTest(DomTest.Append)">Dodawanie elementów</button>
+        <button type="button" 
+                class="@GetButtonClass(DomTest.Remove)" 
+                @onclick="() => SelectTest(DomTest.Remove)">Usuwanie elementów</button>
+    </div>
+    <hr />
+    <div id="scratchpad"></div>
+</BaseBenchmark>
 
 @code {
     public string Name => "Test manipulacji DOM";
-    public Task SetupTest()
+    private DomBenchmarkForm _formModel = new ();
+    private DomTest _activeTest = DomTest.Append;
+
+    public void SelectTest(DomTest test)
     {
-        throw new NotImplementedException();
+        _activeTest = test;
     }
 
-    public Task RunTest()
+    public string GetButtonClass(DomTest test)
     {
-        throw new NotImplementedException();
+        return $"btn {(_activeTest == test ? "btn-success" : "btn-secondary")}";
     }
 
+    public async Task SetupTest()
+    {
+        switch (_activeTest)
+        {
+            case DomTest.Append:
+                await RemoveAllFromScratchpad();
+                break;
+            case DomTest.Remove:
+                await AddToScratchPad();
+                break;
+        }
+    }
+
+    public async Task RunTest()
+    {
+        switch (_activeTest)
+        {
+            case DomTest.Append:
+                await AddToScratchPad();
+                break;
+            case DomTest.Remove:
+                await RemoveAllFromScratchpad();
+                break;
+        }
+    }
+
+    private async Task RemoveAllFromScratchpad()
+    {
+        await JS.InvokeVoidAsync("removeNodes");
+    }
+
+    private async Task AddToScratchPad()
+    {
+        await JS.InvokeVoidAsync("appendNodes", _formModel.NumberOfElements);
+    }
 }

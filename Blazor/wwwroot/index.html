@@ -9,6 +9,22 @@
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="Blazor.styles.css" rel="stylesheet" />
+
+    <script>
+        window.appendNodes = (nodesCount) => {
+            const scratchpad = document.getElementById("scratchpad");
+            for (let i = 0; i < nodesCount; i++) {
+                let node = document.createElement("div");
+                scratchpad.appendChild(node);
+            }
+        };
+        window.removeNodes = () => {
+            const scratchpad = document.getElementById("scratchpad");
+            while (scratchpad.firstChild) {
+                scratchpad.removeChild(scratchpad.firstChild);
+            }
+        };
+    </script>
 </head>
 
 <body>

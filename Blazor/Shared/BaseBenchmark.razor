@@ -87,8 +87,10 @@
             var runTime = endTime - startTime;
             _results.Add(runTime);
             _progress = (i + 1) * 100 / repeats;
+            StateHasChanged();
         }
         _totalRunTime = _results.Sum();
         _averageRunTime = _totalRunTime / repeats;
+        StateHasChanged();
     }
 }
