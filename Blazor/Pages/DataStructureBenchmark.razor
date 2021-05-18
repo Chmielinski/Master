@@ -37,6 +37,8 @@
     private DataStructureTest _activeTest = DataStructureTest.Generate;
     private List<int> _testList;
     private DataStructureBenchmarkForm _formModel = new();
+    private List<int> _dummyList;
+    private int _dummyNum;
 
     public void SelectTest(DataStructureTest test)
     {
@@ -83,14 +85,14 @@
 
     private void GetUniqueFromArray()
     {
-        var list = _testList.Distinct();
+        _dummyList = _testList.Distinct().ToList();
     }
 
     private void IterateThroughArray()
     {
         for (var i = 0; i < _formModel.ListSize; i++)
         {
-            var value = _testList[i];
+            _dummyNum = _testList[i];
         }
     }
 }

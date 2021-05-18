@@ -42,17 +42,16 @@ export class BenchmarkBaseComponent implements OnInit {
     const repeats = this.repeatCountControl.value;
     for (let i = 0; i < repeats; i++) {
       this.component?.setupTest();
-      const startTime = new Date().getTime();
+      const startTime = window.performance.now();
       await this.component?.runTest();
-      const endTime = new Date().getTime();
-      const runTime = endTime - startTime;
-      console.log(runTime)
+      const endTime = window.performance.now();
+      const runTime = Number((endTime - startTime).toFixed(2));
       this.results.push(runTime);
       this.cdRef.detectChanges();
       this.progress = (i + 1) / repeats * 100;
     }
     this.totalRunTime = this.results.reduce((a, b) => a + b);
-    this.averageRunTime = this.totalRunTime / repeats;
+    this.averageRunTime = Number((this.totalRunTime / repeats).toFixed(2));
   }
 
 }

@@ -14,6 +14,7 @@ export class DataStructureBenchmarkComponent extends BenchmarkComponentBase impl
   public activeTest: DataStructureTest = DataStructureTest.Generate
   public dataStructureTest = DataStructureTest;
   public testArray: number[] = [];
+  public dummy: number = 0;
 
   constructor() {
     super();
@@ -37,7 +38,7 @@ export class DataStructureBenchmarkComponent extends BenchmarkComponentBase impl
 
   public iterateThroughArray(): void {
     for (let i = 0; i < this.testArray.length; i++) {
-      const dummy = this.testArray[i];
+      this.dummy = this.testArray[i];
     }
   }
 
