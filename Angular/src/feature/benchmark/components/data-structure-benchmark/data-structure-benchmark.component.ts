@@ -37,9 +37,9 @@ export class DataStructureBenchmarkComponent extends BenchmarkComponentBase impl
   }
 
   public iterateThroughArray(): void {
-    for (let i = 0; i < this.testArray.length; i++) {
-      this.dummy = this.testArray[i];
-    }
+    this.testArray.forEach(x => {
+      this.dummy = x;
+    });
   }
 
   public getUniqueFromArray(): void {

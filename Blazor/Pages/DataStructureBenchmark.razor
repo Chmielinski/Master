@@ -39,6 +39,7 @@
     private DataStructureBenchmarkForm _formModel = new();
     private List<int> _dummyList;
     private int _dummyNum;
+    private Random _random = new ();
 
     public void SelectTest(DataStructureTest test)
     {
@@ -53,7 +54,7 @@
     public async Task SetupTest()
     {
         if (_activeTest != DataStructureTest.Generate) {
-            _testList = GenerateList();
+            _testList = await GenerateList();
         }
     }
 
@@ -61,38 +62,40 @@
     {
         switch (_activeTest) {
             case DataStructureTest.Generate:
-                GenerateList();
+                await GenerateList();
                 break;
             case DataStructureTest.GetUnique:
-                GetUniqueFromArray();
+                await GetUniqueFromArray();
                 break;
             case DataStructureTest.Iterate:
-                IterateThroughArray();
+                await IterateThroughArray();
                 break;
         }
     }
 
-    private List<int> GenerateList()
+    private async Task<List<int>> GenerateList()
     {
-        var list = new List<int>();
-        var random = new Random();
-        for (var i = 0; i < _formModel.ListSize; i++)
+        return await Task.Run(() =>
         {
-            list.Add(random.Next(0, 100));
-        }
-        return list;
+            var list = new List<int>();
+            for (var i = 0; i < _formModel.ListSize; i++)
+            {
+                list.Add(_random.Next(0, 100));
+            }
+            return list;
+        });
     }
 
-    private void GetUniqueFromArray()
+    private async Task<List<int>> GetUniqueFromArray()
     {
-        _dummyList = _testList.Distinct().ToList();
+        return await Task.Run(() => _testList.Distinct().ToList());
     }
 
-    private void IterateThroughArray()
+    private async Task IterateThroughArray()
     {
-        for (var i = 0; i < _formModel.ListSize; i++)
+        _testList.ForEach(x =>
         {
-            _dummyNum = _testList[i];
-        }
+            _dummyNum = x;
+        });
     }
 }
