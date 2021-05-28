@@ -1,12 +1,13 @@
 ﻿@using Blazor.Abstract
 @using Blazor.Models.Forms
 @using Blazor.Utils
+@using System.Collections.ObjectModel;
 
 <div class="benchmark-base">
     <div class="benchmark-base__flex">
         <h1>@Child.Name</h1>
     </div>
-    <EditForm Model="@_formModel" OnValidSubmit="RunBenchmark">
+    <EditForm Model="@_formModel" OnValidSubmit="async () => await RunBenchmark()">
         <div class="benchmark-base__flex">
             <label>
                 Liczba powtórzeń:
@@ -22,6 +23,9 @@
                 </b>
                 <b>
                     Łączny czas wykonania: @(_totalRunTime) ms
+                </b>
+                <b>
+                    Odchylenie standardowe: @(_stdDev) ms
                 </b>
             }
             else if (_progress > 0)
@@ -67,12 +71,13 @@
     private BaseBenchmarkForm _formModel = new();
     private decimal _averageRunTime = 0;
     private decimal _totalRunTime = 0;
+    private decimal _stdDev = 0;
     private int _progress = 0;
-    private List<long> _results = new();
+    private ObservableCollection<decimal> _results = new();
 
     private bool IsInvalidRepeatCount => _formModel.RepeatCount <= 0;
 
-    private async void RunBenchmark()
+    private async Task RunBenchmark()
     {
         _averageRunTime = 0;
         _totalRunTime = 0;
@@ -81,16 +86,20 @@
         var repeats = _formModel.RepeatCount;
         for (var i = 0; i < repeats; i++) {
             await Child.SetupTest();
-            var startTime = DateTime.UtcNow.ToUnixTimestamp();
-            await Child.RunTest();
-            var endTime = DateTime.UtcNow.ToUnixTimestamp();
-            var runTime = endTime - startTime;
-            _results.Add(runTime);
+            var runTime = await Child.RunTest();
+            _results.Add(Math.Round(runTime, 2));
             _progress = (i + 1) * 100 / repeats;
-            StateHasChanged();
+            await InvokeAsync(() => StateHasChanged());
         }
         _totalRunTime = _results.Sum();
-        _averageRunTime = _totalRunTime / repeats;
-        StateHasChanged();
+        _averageRunTime = _results.Average();
+        _stdDev = Math.Round(GetStdDev(_results.ToList()), 2);
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private decimal GetStdDev(List<decimal> results)
+    {
+        var sqDiffsAverage = results.Select(x => Math.Pow((double)(x - results.Average()), 2)).Average();
+        return (decimal) Math.Sqrt(sqDiffsAverage);
     }
 }

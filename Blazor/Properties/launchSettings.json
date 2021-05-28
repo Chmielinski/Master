@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/Blazor",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:8504",
       "sslPort": 44311
@@ -18,7 +22,7 @@
     },
     "Blazor": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchUrl": "http://localhost/Blazor",
       "environmentVariables": {
         "BlazorEnableCompression": "true",
         "ASPNETCORE_ENVIRONMENT": "Release"

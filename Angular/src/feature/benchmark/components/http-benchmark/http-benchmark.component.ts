@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { HttpTest } from '../../models/http-test.enum';
 import { HttpBenchmarkService } from '../../models/services/http-benchmark.service';
 import { BenchmarkComponentBase } from '../abstract/benchmark-component-base';
@@ -28,16 +27,25 @@ export class HttpBenchmarkComponent extends BenchmarkComponentBase implements On
     
   }
   
-  public async runTest(): Promise<void> {
-    let data;
-    switch(this.activeTest) {
-      case HttpTest.Get:
-        data = await this.httpBenchmarkService.get();
-        break;
-      case HttpTest.Post:
-        data = await this.httpBenchmarkService.post();
-        break;
-    }
-    console.log(data)
+  public async runTest(): Promise<number> {
+    return new Promise(async (resolve, reject) => {
+      let data;
+      let startTime;
+      let endTime;
+      switch(this.activeTest) {
+        case HttpTest.Get:
+          startTime = window.performance.now();
+          data = await this.httpBenchmarkService.get();
+          endTime = window.performance.now();
+          resolve(endTime - startTime);
+          break;
+        case HttpTest.Post:
+          startTime = window.performance.now();
+          data = await this.httpBenchmarkService.post();
+          endTime = window.performance.now();
+          resolve(endTime - startTime);
+          break;
+      }
+    });
   }
 }

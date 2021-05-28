@@ -19,6 +19,7 @@ export class BenchmarkBaseComponent implements OnInit {
   public results: number[] = [];
   public averageRunTime: number = 0;
   public totalRunTime: number = 0;
+  public stdDev: number = 0;
 
   @ContentChild(BenchmarkAdditionalSettingsDirective, { static: false }) additionalSettingsDirective: BenchmarkAdditionalSettingsDirective | undefined;
 
@@ -42,16 +43,27 @@ export class BenchmarkBaseComponent implements OnInit {
     const repeats = this.repeatCountControl.value;
     for (let i = 0; i < repeats; i++) {
       this.component?.setupTest();
-      const startTime = window.performance.now();
-      await this.component?.runTest();
-      const endTime = window.performance.now();
-      const runTime = Number((endTime - startTime).toFixed(2));
+      const runTime = Number((await this.component?.runTest())?.toFixed(2));
       this.results.push(runTime);
       this.cdRef.detectChanges();
       this.progress = (i + 1) / repeats * 100;
     }
-    this.totalRunTime = this.results.reduce((a, b) => a + b);
-    this.averageRunTime = Number((this.totalRunTime / repeats).toFixed(2));
+    this.totalRunTime = this._sum(this.results);
+    this.averageRunTime = this._average(this.results);
+    this.stdDev = this._stdDeviation(this.results);
+  }
+  
+  private _stdDeviation(array: number[]): number {
+    const sqDiffs = array.map(x => Math.pow(x - this._average(array), 2));
+    const avgSqDiff = this._average(sqDiffs);
+    return Number(Math.sqrt(avgSqDiff).toFixed(2));
   }
 
+  private _sum(array: number[]): number {
+    return Number(array.reduce((a, b) => a + b).toFixed(2));
+  }
+
+  private _average(array: number[]): number {
+    return Number((this._sum(array) / array.length).toFixed(2));
+  }
 }

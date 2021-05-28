@@ -1,6 +1,7 @@
 ﻿@page "/http"
 @using Blazor.Models.Enums
 @using Blazor.Services.Interfaces
+@using System.Diagnostics
 @inject IHttpBenchmarkService HttpBenchmarkService;
 @implements Blazor.Abstract.IBenchmarkComponentBase
 
@@ -22,23 +23,31 @@
     @code {
         public string Name => "Test komunikacji HTTP";
         private HttpTest _activeTest = HttpTest.Get;
+        private long _nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
 
         public async Task SetupTest()
         {
             return;
         }
 
-        public async Task RunTest()
+        public async Task<decimal> RunTest()
         {
+            DateTime startTime;
+            DateTime endTime;
             switch (_activeTest)
             {
                 case HttpTest.Get:
+                    var sw = Stopwatch.StartNew();
                     await HttpBenchmarkService.Get();
-                    break;
+                    sw.Stop();
+                    return (decimal)((sw.ElapsedTicks * (double)_nanosecPerTick) / 1000000d);
                 case HttpTest.Post:
+                    var sw2 = Stopwatch.StartNew();
                     await HttpBenchmarkService.Post();
-                    break;
+                    sw2.Stop();
+                    return (decimal)((sw2.ElapsedTicks * (double)_nanosecPerTick) / 1000000d);
             }
+            throw new InvalidOperationException();
         }
 
         public void SelectTest(HttpTest test)

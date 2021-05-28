@@ -26,8 +26,6 @@ namespace Blazor.Services.Implementation
         public async Task Get()
         {
             var data = await _httpClient.GetAsync("/Test/get");
-            var movies = await data.Content.ReadFromJsonAsync<Movie[]>();
-            var test = 123;
         }
     }
 }

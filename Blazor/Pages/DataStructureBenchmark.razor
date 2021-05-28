@@ -1,6 +1,7 @@
 ﻿@page "/data-structure"
 @using Blazor.Models.Enums
 @using Blazor.Models.Forms
+@using System.Diagnostics
 @implements Blazor.Abstract.IBenchmarkComponentBase
 
 <BaseBenchmark Child="@this">
@@ -40,6 +41,7 @@
     private List<int> _dummyList;
     private int _dummyNum;
     private Random _random = new ();
+    private long _nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
 
     public void SelectTest(DataStructureTest test)
     {
@@ -54,48 +56,75 @@
     public async Task SetupTest()
     {
         if (_activeTest != DataStructureTest.Generate) {
-            _testList = await GenerateList();
+            _testList = GenerateListInternal();
         }
     }
 
-    public async Task RunTest()
+    public async Task<decimal> RunTest()
     {
         switch (_activeTest) {
             case DataStructureTest.Generate:
-                await GenerateList();
-                break;
+                return await GenerateList();
             case DataStructureTest.GetUnique:
-                await GetUniqueFromArray();
-                break;
+                return await GetUniqueFromArray();
             case DataStructureTest.Iterate:
-                await IterateThroughArray();
-                break;
+                return await IterateThroughArray();
         }
+        throw new InvalidOperationException();
     }
 
-    private async Task<List<int>> GenerateList()
+    private async Task<decimal> GenerateList()
     {
-        return await Task.Run(() =>
+        return await Task.Run(async () =>
         {
-            var list = new List<int>();
-            for (var i = 0; i < _formModel.ListSize; i++)
+            var sw = Stopwatch.StartNew();
+            await InvokeAsync(() =>
             {
-                list.Add(_random.Next(0, 100));
-            }
-            return list;
+                GenerateListInternal();
+            });
+            sw.Stop();
+            return (decimal)((sw.ElapsedTicks * (double)_nanosecPerTick) / 1000000d);
         });
     }
 
-    private async Task<List<int>> GetUniqueFromArray()
+    private List<int> GenerateListInternal()
     {
-        return await Task.Run(() => _testList.Distinct().ToList());
+        var list = new List<int>();
+        for (var i = 0; i < _formModel.ListSize; i++)
+        {
+            list.Add(_random.Next(0, 100));
+        }
+        return list;
     }
 
-    private async Task IterateThroughArray()
+    private async Task<decimal> GetUniqueFromArray()
     {
-        _testList.ForEach(x =>
+        return await Task.Run(async () =>
         {
-            _dummyNum = x;
+            var sw = Stopwatch.StartNew();
+            await InvokeAsync(() =>
+            {
+                _dummyList = _testList.Distinct().ToList();
+            });
+            sw.Stop();
+            return (decimal)((sw.ElapsedTicks * (double)_nanosecPerTick) / 1000000d);
+        });
+    }
+
+    private async Task<decimal> IterateThroughArray()
+    {
+        return await Task.Run(async () =>
+        {
+            var sw = Stopwatch.StartNew();
+            await InvokeAsync(() =>
+            {
+                _testList.ForEach(x =>
+                {
+                    _dummyNum = x;
+                });
+            });
+            sw.Stop();
+            return (decimal)((sw.ElapsedTicks * (double)_nanosecPerTick) / 1000000d);
         });
     }
 }

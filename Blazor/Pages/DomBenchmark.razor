@@ -1,6 +1,7 @@
 ﻿@page "/dom"
 @using Blazor.Models.Forms
 @using Blazor.Models.Enums
+@using System.Diagnostics
 @inject IJSRuntime JS
 @implements Blazor.Abstract.IBenchmarkComponentBase
 
@@ -59,26 +60,25 @@
         }
     }
 
-    public async Task RunTest()
+    public async Task<decimal> RunTest()
     {
         switch (_activeTest)
         {
             case DomTest.Append:
-                await AddToScratchPad();
-                break;
+                return await AddToScratchPad();
             case DomTest.Remove:
-                await RemoveAllFromScratchpad();
-                break;
+                return await RemoveAllFromScratchpad();
         }
+        throw new InvalidOperationException();
     }
 
-    private async Task RemoveAllFromScratchpad()
+    private async Task<decimal> RemoveAllFromScratchpad()
     {
-        await JS.InvokeVoidAsync("removeNodes");
+        return await JS.InvokeAsync<decimal>("removeNodes");
     }
 
-    private async Task AddToScratchPad()
+    private async Task<decimal> AddToScratchPad()
     {
-        await JS.InvokeVoidAsync("appendNodes", _formModel.NumberOfElements);
+        return await JS.InvokeAsync<decimal>("appendNodes", _formModel.NumberOfElements);
     }
 }

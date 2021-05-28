@@ -25,38 +25,52 @@ export class DomBenchmarkComponent extends BenchmarkComponentBase implements OnI
     this.activeTest = test;
   }
 
-  public removeAllFromScratchpad(): void {
-    while (this.scratchpad?.nativeElement.firstChild) {
-      this.scratchpad.nativeElement.removeChild(this.scratchpad.nativeElement.firstChild);
-    }
+  public removeAllFromScratchpad(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const startTime = window.performance.now();
+        while (this.scratchpad?.nativeElement.firstChild) {
+          this.scratchpad.nativeElement.removeChild(this.scratchpad.nativeElement.firstChild);
+        }
+        const endTime = window.performance.now();
+        resolve(endTime - startTime);
+      }, 0);
+    });
   }
 
-  public addToScratchpad(): void {
-    for (let i = 0; i < this.numberOfElementsControl.value; i++) {
-      let node = document.createElement("div");
-      this.scratchpad?.nativeElement.appendChild(node);
-    }
+  public addToScratchpad(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const startTime = window.performance.now();
+        for (let i = 0; i < this.numberOfElementsControl.value; i++) {
+          let node = document.createElement("div");
+          this.scratchpad?.nativeElement.appendChild(node);
+        }
+        const endTime = window.performance.now();
+        resolve(endTime - startTime);
+      }, 0);
+    });
   }
 
-  public setupTest(): void {
+  public async setupTest(): Promise<void> {
     switch(this.activeTest) {
       case DomTest.Append:
-        this.removeAllFromScratchpad();
+        await this.removeAllFromScratchpad();
+        debugger;
         break;
       case DomTest.Remove:
-        this.addToScratchpad();
+        await this.addToScratchpad();
+        debugger;
         break;
     }
   }
   
-  public runTest(): void {
+  public async runTest(): Promise<number> {
     switch(this.activeTest) {
       case DomTest.Remove:
-        this.removeAllFromScratchpad();
-        break;
+        return await this.removeAllFromScratchpad();
       case DomTest.Append:
-        this.addToScratchpad();
-        break;
+        return await this.addToScratchpad();
     }
   }
 }

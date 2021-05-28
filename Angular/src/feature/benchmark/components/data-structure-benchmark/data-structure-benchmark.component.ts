@@ -28,7 +28,18 @@ export class DataStructureBenchmarkComponent extends BenchmarkComponentBase impl
     this.activeTest = test;
   }
 
-  public generateArray(): number[] {
+  public generateArray(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const startTime = window.performance.now();
+        this._generateInternal();
+        const endTime = window.performance.now();
+        resolve(endTime - startTime);
+      }, 0);
+    });
+  }
+
+  private _generateInternal(): number[] {
     const array: number[] = new Array(this.numberOfElementsControl.value);
     for (let i = 0; i < array.length; i++) {
       array[i] = Math.round(Math.random() * 100);
@@ -36,33 +47,44 @@ export class DataStructureBenchmarkComponent extends BenchmarkComponentBase impl
     return array;
   }
 
-  public iterateThroughArray(): void {
-    this.testArray.forEach(x => {
-      this.dummy = x;
+  public iterateThroughArray(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const startTime = window.performance.now();
+        this.testArray.forEach(x => {
+          this.dummy = x;
+        });
+        const endTime = window.performance.now();
+        resolve(endTime - startTime);
+      }, 0);
     });
   }
 
-  public getUniqueFromArray(): void {
-    this.testArray.filter((elem, pos, array) => array.indexOf(elem) === pos);
+  public getUniqueFromArray(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const startTime = window.performance.now();
+        this.testArray.filter((elem, pos, array) => array.indexOf(elem) === pos);
+        const endTime = window.performance.now();
+        resolve(endTime - startTime);
+      });
+    });
   }
 
   public setupTest(): void {
     if (this.activeTest !== DataStructureTest.Generate) {
-      this.testArray = this.generateArray();
+      this.testArray = this._generateInternal();
     }
   }
 
-  public runTest(): void {
+  public async runTest(): Promise<number> {
     switch (this.activeTest) {
       case DataStructureTest.Generate:
-        this.generateArray();
-        break;
+        return await this.generateArray();
       case DataStructureTest.GetUnique:
-        this.getUniqueFromArray();
-        break;
+        return await this.getUniqueFromArray();
       case DataStructureTest.Iterate:
-        this.iterateThroughArray();
-        break;
+        return await this.iterateThroughArray();
     }
   }
 

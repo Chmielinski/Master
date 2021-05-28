@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 namespace Blazor.Abstract
@@ -7,6 +8,6 @@ namespace Blazor.Abstract
     {
         string Name { get; }
         Task SetupTest();
-        Task RunTest();
+        Task<decimal> RunTest();
     }
 }
