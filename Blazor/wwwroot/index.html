@@ -40,14 +40,10 @@
         };
 
         window.appendNodes = async (nodesCount) => {
-            const val = await window.appendNodesPromise(nodesCount);
-            console.log(val);
-            return val;
+            return await window.appendNodesPromise(nodesCount);
         };
         window.removeNodes = async () => {
-            const val = await window.removeNodesPromise();
-            console.log(val);
-            return val;
+            return await window.removeNodesPromise();
         };
     </script>
 </head>
